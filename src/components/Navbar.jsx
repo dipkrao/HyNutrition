@@ -53,14 +53,14 @@ export default function Navbar() {
   };
 
   const openCatMenu = () => { clearTimeout(catTimeout.current); setCatMenuOpen(true); };
-  const closeCatMenu = () => { catTimeout.current = setTimeout(() => setCatMenuOpen(false), 150); };
+  const closeCatMenu = () => { catTimeout.current = setTimeout(() => setCatMenuOpen(false), 200); };
 
   const activeCategories = categories.filter(c => c.isActive);
 
   return (
     <>
-      <nav style={{ background: '#0a0a0a', position: 'sticky', top: 0, zIndex: 1000, boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.4)' : '0 2px 20px rgba(0,0,0,0.3)', transition: 'box-shadow 0.3s', maxWidth: '100vw', overflow: 'hidden' }}>
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64, overflow: 'hidden' }}>
+      <nav style={{ background: '#0a0a0a', position: 'sticky', top: 0, zIndex: 1000, boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.4)' : '0 2px 20px rgba(0,0,0,0.3)', transition: 'box-shadow 0.3s', maxWidth: '100vw' }}>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
           {/* Logo */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, minWidth: 0 }}>
             <div style={{ width: 38, height: 38, background: 'linear-gradient(135deg,#f59e0b,#ef4444)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>💪</div>
@@ -72,7 +72,7 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="nav-links" style={{ gap: 24, alignItems: 'center' }}>
-            {[['/', 'Home'], ['/shop', 'Shop'], ['/about', 'About'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
+            {[['/', 'Home'], ['/shop', 'Shop'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
               <Link key={to} to={to} style={{ color: '#d1d5db', fontSize: 14, fontWeight: 600, letterSpacing: 0.5, transition: 'color 0.2s' }}
                 onMouseEnter={e => e.target.style.color = '#f59e0b'} onMouseLeave={e => e.target.style.color = '#d1d5db'}>
                 {label}
@@ -81,14 +81,18 @@ export default function Navbar() {
 
             {/* Categories Mega Menu Trigger */}
             {activeCategories.length > 0 && (
-              <div style={{ position: 'relative' }} onMouseEnter={openCatMenu} onMouseLeave={closeCatMenu}>
-                <button style={{ background: 'none', border: 'none', color: '#d1d5db', fontSize: 14, fontWeight: 600, letterSpacing: 0.5, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#f59e0b'} onMouseLeave={e => e.currentTarget.style.color = '#d1d5db'}>
+              <div style={{ position: 'static' }}
+                onMouseEnter={openCatMenu}
+                onMouseLeave={closeCatMenu}>
+                <button style={{ background: 'none', border: 'none', color: catMenuOpen ? '#f59e0b' : '#d1d5db', fontSize: 14, fontWeight: 600, letterSpacing: 0.5, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
                   Categories <span style={{ fontSize: 10 }}>▼</span>
                 </button>
 
                 {catMenuOpen && (
-                  <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 8, background: '#fff', borderRadius: 16, boxShadow: '0 16px 48px rgba(0,0,0,0.18)', minWidth: 560, padding: 24, zIndex: 200, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                  <div
+                    onMouseEnter={openCatMenu}
+                    onMouseLeave={closeCatMenu}
+                    style={{ position: 'fixed', top: 64, left: '50%', transform: 'translateX(-25%)', background: '#fff', borderRadius: 16, boxShadow: '0 16px 48px rgba(0,0,0,0.18)', minWidth: 560, padding: 24, zIndex: 2000, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
                     <Link to="/shop" onClick={() => setCatMenuOpen(false)}
                       style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, transition: 'background 0.15s', color: '#111', textDecoration: 'none', gridColumn: '1/-1', background: '#f8f9fa', marginBottom: 4 }}
                       onMouseEnter={e => e.currentTarget.style.background = '#fef3c7'} onMouseLeave={e => e.currentTarget.style.background = '#f8f9fa'}>
@@ -187,7 +191,7 @@ export default function Navbar() {
         </div>
 
         <div style={{ padding: '8px 0' }}>
-          {[['/', 'Home'], ['/shop', 'Shop'], ['/about', 'About'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
+          {[['/', 'Home'], ['/shop', 'Shop'], ['/blog', 'Blog'], ['/contact', 'Contact']].map(([to, label]) => (
             <Link key={to} to={to} onClick={() => setDrawerOpen(false)} style={{ display: 'block', padding: '14px 24px', color: '#d1d5db', fontSize: 15, fontWeight: 600, borderBottom: '1px solid #111' }}
               onMouseEnter={e => e.currentTarget.style.color = '#f59e0b'} onMouseLeave={e => e.currentTarget.style.color = '#d1d5db'}>
               {label}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfile, logout } from '../store/slices/authSlice';
+import { updateProfile, logout, addAddress, deleteAddress } from '../store/slices/authSlice';
 import { fetchMyOrders } from '../store/slices/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -12,6 +12,24 @@ export default function ProfilePage() {
   const { orders } = useSelector(s => s.orders);
   const [tab, setTab] = useState('profile');
   const [form, setForm] = useState({ name: user?.name || '', phone: user?.phone || '' });
+  const emptyAddr = { label: 'Home', fullName: '', phone: '', addressLine1: '', city: '', state: '', pincode: '', isDefault: false };
+  const [showAddrForm, setShowAddrForm] = useState(false);
+  const [addrForm, setAddrForm] = useState(emptyAddr);
+
+  const handleAddAddress = async () => {
+    if (!addrForm.fullName || !addrForm.phone || !addrForm.addressLine1 || !addrForm.city || !addrForm.state || !addrForm.pincode) {
+      toast.error('Please fill all address fields'); return;
+    }
+    await dispatch(addAddress(addrForm));
+    toast.success('Address added!');
+    setAddrForm(emptyAddr);
+    setShowAddrForm(false);
+  };
+
+  const handleDeleteAddress = async (id) => {
+    await dispatch(deleteAddress(id));
+    toast.success('Address removed');
+  };
 
   useEffect(() => { dispatch(fetchMyOrders()); }, [dispatch]);
 
@@ -101,18 +119,47 @@ export default function ProfilePage() {
         )}
         {tab === 'addresses' && (
           <div className="card" style={{ padding: 28 }}>
-            <h2 style={{ fontWeight: 800, marginBottom: 24 }}>Saved Addresses</h2>
-            {user?.addresses?.length > 0 ? user.addresses.map((a,i) => (
-              <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                <div style={{ fontWeight: 700, marginBottom: 4 }}>{a.label} {a.isDefault && <span style={{ fontSize: 11, background: '#dcfce7', color: '#14532d', padding: '2px 8px', borderRadius: 12, marginLeft: 8 }}>Default</span>}</div>
-                <div style={{ color: '#374151', fontSize: 14 }}>{a.fullName} · {a.phone}</div>
-                <div style={{ color: '#6b7280', fontSize: 13 }}>{a.addressLine1}, {a.city}, {a.state} - {a.pincode}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h2 style={{ fontWeight: 800 }}>Saved Addresses</h2>
+              <button onClick={() => setShowAddrForm(v => !v)} className="btn btn-primary" style={{ fontSize: 13 }}>+ Add Address</button>
+            </div>
+            {showAddrForm && (
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 20, marginBottom: 20, background: '#fffbeb' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  {[['fullName','Full Name'],['phone','Phone'],['addressLine1','Address'],['city','City'],['state','State'],['pincode','Pincode']].map(([k,l]) => (
+                    <div key={k} style={k === 'addressLine1' ? { gridColumn: '1/-1' } : {}}>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>{l}</label>
+                      <input value={addrForm[k]} onChange={e => setAddrForm(f => ({...f,[k]:e.target.value}))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 14, boxSizing: 'border-box' }} />
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>Label:</label>
+                    {['Home','Work','Other'].map(l => (
+                      <button key={l} onClick={() => setAddrForm(f => ({...f,label:l}))} style={{ padding: '4px 12px', borderRadius: 20, border: '1px solid', fontSize: 12, fontWeight: 600, cursor: 'pointer', background: addrForm.label === l ? '#f59e0b' : '#fff', color: addrForm.label === l ? '#000' : '#6b7280', borderColor: addrForm.label === l ? '#f59e0b' : '#e5e7eb' }}>{l}</button>
+                    ))}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input type="checkbox" id="isDefault" checked={addrForm.isDefault} onChange={e => setAddrForm(f => ({...f,isDefault:e.target.checked}))} />
+                    <label htmlFor="isDefault" style={{ fontSize: 13, color: '#374151', cursor: 'pointer' }}>Set as default</label>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button onClick={handleAddAddress} className="btn btn-primary" style={{ fontSize: 13 }}>Save Address</button>
+                  <button onClick={() => { setShowAddrForm(false); setAddrForm(emptyAddr); }} style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', fontSize: 13 }}>Cancel</button>
+                </div>
+              </div>
+            )}
+            {user?.addresses?.length > 0 ? user.addresses.map((a) => (
+              <div key={a._id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{a.label} {a.isDefault && <span style={{ fontSize: 11, background: '#dcfce7', color: '#14532d', padding: '2px 8px', borderRadius: 12, marginLeft: 8 }}>Default</span>}</div>
+                  <div style={{ color: '#374151', fontSize: 14 }}>{a.fullName} · {a.phone}</div>
+                  <div style={{ color: '#6b7280', fontSize: 13 }}>{a.addressLine1}, {a.city}, {a.state} - {a.pincode}</div>
+                </div>
+                <button onClick={() => handleDeleteAddress(a._id)} style={{ background: '#fee2e2', color: '#991b1b', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>Remove</button>
               </div>
             )) : (
-              <div style={{ border: '2px dashed #e5e7eb', borderRadius: 12, padding: 24, textAlign: 'center', cursor: 'pointer', color: '#6b7280' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>+</div>
-                <div style={{ fontWeight: 600 }}>Add New Address</div>
-              </div>
+              <div style={{ textAlign: 'center', padding: '40px 0', color: '#6b7280' }}>No saved addresses yet.</div>
             )}
           </div>
         )}

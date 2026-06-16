@@ -42,7 +42,7 @@ export default function ProductCard({ product, compact }) {
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; }}>
       {product.badge && <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 2, background: BADGE_COLORS[product.badge] || '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>{product.badge}</div>}
-      <button onClick={handleWishlist} style={{ position: 'absolute', top: 12, right: 12, zIndex: 2, background: inWishlist ? '#ef4444' : 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+      <button onClick={handleWishlist} style={{ position: 'absolute', top: 12, right: 12, zIndex: 2, background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
         {inWishlist ? '❤️' : '🤍'}
       </button>
       <div style={{ height: compact ? 120 : 180, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#f8f9fa,#e9ecef)' }}>

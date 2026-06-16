@@ -44,6 +44,24 @@ export const updateProfile = createAsyncThunk('auth/updateProfile', async (data,
   }
 });
 
+export const addAddress = createAsyncThunk('auth/addAddress', async (data, { rejectWithValue }) => {
+  try {
+    const res = await api.post('/auth/addresses', data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message);
+  }
+});
+
+export const deleteAddress = createAsyncThunk('auth/deleteAddress', async (addressId, { rejectWithValue }) => {
+  try {
+    const res = await api.delete(`/auth/addresses/${addressId}`);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message);
+  }
+});
+
 export const toggleWishlist = createAsyncThunk('auth/toggleWishlist', async (productId, { rejectWithValue }) => {
   try {
     const res = await api.put(`/auth/wishlist/${productId}`);
@@ -94,6 +112,12 @@ const authSlice = createSlice({
       })
       .addCase(toggleWishlist.fulfilled, (state, action) => {
         if (state.user) state.user.wishlist = action.payload.wishlist;
+      })
+      .addCase(addAddress.fulfilled, (state, action) => {
+        if (state.user) state.user.addresses = action.payload.addresses;
+      })
+      .addCase(deleteAddress.fulfilled, (state, action) => {
+        if (state.user) state.user.addresses = action.payload.addresses;
       });
   },
 });

@@ -11,12 +11,18 @@ export const fetchProducts = createAsyncThunk('products/fetchAll', async (params
   }
 });
 
-export const fetchProduct = createAsyncThunk('products/fetchOne', async (slug, { rejectWithValue }) => {
+export const fetchProduct = createAsyncThunk('products/fetchOne', async (identifier, { rejectWithValue }) => {
   try {
-    const res = await api.get(`/products/${slug}`);
+    const res = await api.get(`/products/${identifier}`);
+    if (!res.data?.product) {
+      console.error('[fetchProduct] API returned no product for identifier:', identifier, res.data);
+      return rejectWithValue('Product not found');
+    }
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response?.data?.message);
+    const msg = err.response?.data?.message || err.message || 'Failed to load product';
+    console.error('[fetchProduct] Request failed for identifier:', identifier, '| Status:', err.response?.status, '| Message:', msg);
+    return rejectWithValue(msg);
   }
 });
 

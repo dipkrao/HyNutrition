@@ -37,8 +37,18 @@ export default function ProductCard({ product, compact }) {
     toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
   };
 
+  const handleCardClick = () => {
+    const identifier = product.slug || product._id;
+    if (!identifier) {
+      console.error('[ProductCard] Product has no slug or _id:', product);
+      return;
+    }
+    if (!product.slug) console.warn('[ProductCard] Product missing slug, falling back to _id:', product._id);
+    navigate(`/product/${identifier}`);
+  };
+
   return (
-    <div onClick={() => navigate(`/product/${product.slug}`)} style={{ background: '#fff', border: '1px solid #f0f0f0', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.3s', position: 'relative', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+    <div onClick={handleCardClick} style={{ background: '#fff', border: '1px solid #f0f0f0', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.3s', position: 'relative', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; }}>
       {product.badge && <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 2, background: BADGE_COLORS[product.badge] || '#f59e0b', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>{product.badge}</div>}
